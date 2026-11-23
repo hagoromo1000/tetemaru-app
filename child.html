@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ててまる こども画面</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="phone child-bg">
+
+  <main class="content child-content">
+
+    <!-- ててまるキャラクター -->
+    <div class="mascot-wrap">
+      <div class="mascot-circle" aria-hidden="true">
+        <svg width="64" height="64" viewBox="0 0 48 48" fill="none" stroke="#C9435A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="24" cy="27" r="14"/>
+          <path d="M15 11 L10 4" /><circle cx="9" cy="3" r="2.6" fill="#F2707E" stroke="#C9435A"/>
+          <path d="M33 11 L38 4" /><circle cx="39" cy="3" r="2.6" fill="#F2707E" stroke="#C9435A"/>
+          <circle cx="19" cy="25" r="1.4" fill="#1C1A1E" stroke="none"/>
+          <circle cx="29" cy="25" r="1.4" fill="#1C1A1E" stroke="none"/>
+          <path d="M19 31 Q24 35 29 31" />
+        </svg>
+      </div>
+      <span class="mascot-greeting">やあ!いっしょにがんばろう!</span>
+    </div>
+
+    <!-- 今日の目標 -->
+    <div class="child-card">
+      <span class="child-goal-label">きょうの　もくひょう</span>
+      <span class="child-goal-value">さんすうを 10ぷん</span>
+      <button class="start-btn" id="startBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 4 20 12 6 20"/></svg>
+        はじめる
+      </button>
+    </div>
+
+    <!-- 今日のがんばり -->
+    <div class="child-card progress-card">
+      <div class="progress-ring" aria-hidden="true">
+        <div class="progress-ring-inner">8問</div>
+      </div>
+      <div class="progress-text">
+        <span class="progress-title">きょうは　8もん といたよ!</span>
+        <span class="progress-sub">あと2もんで　きろくこうしん!</span>
+      </div>
+    </div>
+
+    <!-- ててまるのあたたかさ -->
+    <div class="child-card" style="align-items: stretch;">
+      <span class="setting-label-top" style="font-size:14px; font-weight:800; justify-content:center;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C9435A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2c2 3-2 4-1 7 1-1 2-1 3 0 1 2-1 4-3 4-3 0-5-2-5-5 0-3 2-4 2-6 1 1 1 2 1 3z"/><path d="M9 17a3 3 0 0 0 6 0"/></svg>
+        ててまるの　あたたかさ
+      </span>
+      <div class="temp-row" style="margin-top:10px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#767179" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M5 7l14 10M19 7L5 17M2 12h20"/></svg>
+        <input id="heat" type="range" min="28" max="40" step="1" value="36" aria-label="ててまるのあたたかさ">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#767179" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2 12h2M20 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
+      </div>
+      <div class="temp-value" id="heatLabel">36ど</div>
+    </div>
+
+    <!-- ぎゅっとして -->
+    <button class="hug-btn" id="hugBtn">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.1 2.3 4 6.1 4c2 0 3.4 1 4.9 2.8C12.5 5 13.9 4 15.9 4c3.8 0 5.7 4.1 4.1 7.7C17.5 16.4 12 21 12 21z"/></svg>
+      <span id="hugLabel">ててまるを ぎゅっと する</span>
+    </button>
+  </main>
+
+  <div id="hugToast" style="position:fixed; left:50%; bottom:100px; transform:translateX(-50%) translateY(10px); opacity:0; transition:all .25s ease; background:#1C1A1E; color:#fff; font-size:13px; font-weight:700; padding:10px 18px; border-radius:999px; pointer-events:none; z-index:60; white-space:nowrap;">あったかい!ありがとう</div>
+
+  <!-- 学習中ロックオーバーレイ -->
+  <div class="lock-overlay hidden" id="lockOverlay" role="dialog" aria-modal="true" aria-label="学習ロック中">
+    <div class="lock-icon-wrap" aria-hidden="true">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#C9435A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+    </div>
+    <div class="lock-title">がくしゅうロック中</div>
+    <div class="lock-sub">ててまるとの学習に<strong>ひつようなもの</strong>いがいは<br>いまは つかえません</div>
+
+    <div class="timer" id="timer">00:00</div>
+    <div class="lock-progress-track"><div class="lock-progress-fill" id="lockProgressFill"></div></div>
+    <div class="lock-goal-label" id="lockGoalLabel">もくひょう:さんすうを 10ぷん</div>
+
+    <div class="allowed-box">
+      <span class="allowed-title">つかえるもの</span>
+      <span class="allowed-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9435A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        ててまる(カメラ・AI・教材)
+      </span>
+      <span class="allowed-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9435A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        学習タイマー
+      </span>
+    </div>
+
+    <button class="unlock-btn" id="unlockBtn">
+      <span class="unlock-fill" id="unlockFill"></span>
+      <span id="unlockLabel">ほごしゃは ここを 3びょう おしてください(かいじょ)</span>
+    </button>
+  </div>
+
+  <nav class="tabbar child-tabbar">
+    <a class="tab child-tab active" href="child.html">
+      <span class="child-tab-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/></svg>
+      </span>
+      ホーム
+    </a>
+    <a class="tab child-tab" href="study-log.html">
+      <span class="child-tab-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      </span>
+      きろく
+    </a>
+    <a class="tab child-tab" href="index.html">
+      <span class="child-tab-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="7" r="3"/><path d="M2 21v-2a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v2"/><circle cx="18" cy="8" r="2.2"/><path d="M15.5 21v-1.5a3.5 3.5 0 0 1 3-3.46"/></svg>
+      </span>
+      ほごしゃ
+    </a>
+  </nav>
+</div>
+
+<script>
+const heat = document.getElementById("heat");
+const heatLabel = document.getElementById("heatLabel");
+heat.addEventListener("input", () => { heatLabel.textContent = heat.value + "ど"; });
+
+// ---- 学習ロック機能 ----
+const GOAL_SECONDS = 10 * 60; // 今日の目標:10分
+const startBtn = document.getElementById("startBtn");
+const overlay = document.getElementById("lockOverlay");
+const timerEl = document.getElementById("timer");
+const progressFill = document.getElementById("lockProgressFill");
+const unlockBtn = document.getElementById("unlockBtn");
+const unlockFill = document.getElementById("unlockFill");
+const unlockLabel = document.getElementById("unlockLabel");
+
+let elapsed = 0;
+let tickTimer = null;
+let holdTimer = null;
+let holdStart = null;
+const HOLD_MS = 3000;
+
+function formatTime(sec) {
+  const m = String(Math.floor(sec / 60)).padStart(2, "0");
+  const s = String(sec % 60).padStart(2, "0");
+  return m + ":" + s;
+}
+
+function startLock() {
+  overlay.classList.remove("hidden");
+  elapsed = 0;
+  timerEl.textContent = formatTime(elapsed);
+  progressFill.style.width = "0%";
+  tickTimer = setInterval(() => {
+    elapsed += 1;
+    timerEl.textContent = formatTime(elapsed);
+    progressFill.style.width = Math.min(100, (elapsed / GOAL_SECONDS) * 100) + "%";
+  }, 1000);
+}
+
+function endLock() {
+  clearInterval(tickTimer);
+  overlay.classList.add("hidden");
+}
+
+startBtn.addEventListener("click", startLock);
+
+function startHold(e) {
+  e.preventDefault();
+  holdStart = Date.now();
+  unlockLabel.textContent = "そのまま おしつづけて...";
+  holdTimer = setInterval(() => {
+    const pct = Math.min(100, ((Date.now() - holdStart) / HOLD_MS) * 100);
+    unlockFill.style.width = pct + "%";
+    if (pct >= 100) {
+      clearInterval(holdTimer);
+      endLock();
+    }
+  }, 30);
+}
+function cancelHold() {
+  clearInterval(holdTimer);
+  unlockFill.style.width = "0%";
+  unlockLabel.textContent = "ほごしゃは ここを 3びょう おしてください(かいじょ)";
+}
+unlockBtn.addEventListener("pointerdown", startHold);
+unlockBtn.addEventListener("pointerup", cancelHold);
+unlockBtn.addEventListener("pointerleave", cancelHold);
+
+// ---- ぎゅっとする:タップ反応 ----
+const hugBtn = document.getElementById("hugBtn");
+const hugToast = document.getElementById("hugToast");
+let hugTimer = null;
+hugBtn.addEventListener("click", () => {
+  hugToast.style.opacity = "1";
+  hugToast.style.transform = "translateX(-50%) translateY(0)";
+  hugBtn.style.transform = "scale(0.97)";
+  setTimeout(() => { hugBtn.style.transform = "scale(1)"; }, 120);
+  clearTimeout(hugTimer);
+  hugTimer = setTimeout(() => {
+    hugToast.style.opacity = "0";
+    hugToast.style.transform = "translateX(-50%) translateY(10px)";
+  }, 1400);
+});
+</script>
+</body>
+</html>
