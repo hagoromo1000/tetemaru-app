@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ててまる 保護者ホーム</title>
+<link rel="stylesheet" href="styles.css">
+<script src="data.js"></script>
+</head>
+<body>
+<div class="phone">
+
+  <header class="header">
+    <div class="header-row" style="align-items: flex-start;">
+      <div class="status-row">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span class="status-text">ててまると接続中</span>
+      </div>
+      <a href="child.html" style="all: unset; cursor: pointer; display: flex; align-items: center; gap: 5px; background: #FFF7F3; border-radius: 999px; padding: 6px 12px; font-size: 11.5px; font-weight: 700; color: #C9435A;">
+        こども画面へ
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
+      </a>
+    </div>
+    <div class="header-row">
+      <div>
+        <h1 class="header-title">ててまる 保護者ホーム</h1>
+        <span class="header-sub">
+          <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="18" height="12" rx="2"/><line x1="22" y1="11" x2="22" y2="15"/></svg>
+          バッテリー 85%・Wi-Fi接続中
+        </span>
+      </div>
+      <div class="avatar" aria-hidden="true">
+        <svg width="30" height="30" viewBox="0 0 48 48" fill="none" stroke="#C9435A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="24" cy="27" r="14"/>
+          <circle cx="24" cy="27" r="1.6" fill="#C9435A" stroke="none"/>
+          <path d="M15 11 L10 4" /><circle cx="9" cy="3" r="2.6" fill="#F2707E" stroke="#C9435A"/>
+          <path d="M33 11 L38 4" /><circle cx="39" cy="3" r="2.6" fill="#F2707E" stroke="#C9435A"/>
+          <circle cx="19" cy="25" r="1.4" fill="#1C1A1E" stroke="none"/>
+          <circle cx="29" cy="25" r="1.4" fill="#1C1A1E" stroke="none"/>
+          <path d="M19 31 Q24 35 29 31" />
+        </svg>
+      </div>
+    </div>
+  </header>
+
+  <main class="content">
+
+    <!-- 今日の学習 -->
+    <section>
+      <h2 class="section-title">今日の学習</h2>
+      <div class="stat-row" style="margin-top:10px;">
+        <div class="card stat-card">
+          <span class="stat-label">学習時間</span>
+          <span class="stat-value">25分</span>
+        </div>
+        <div class="card stat-card">
+          <span class="stat-label">取り組んだ問題</span>
+          <span class="stat-value">8問</span>
+        </div>
+      </div>
+      <div class="card goal-row" style="margin-top:10px;">
+        <div>
+          <div class="goal-label">今日の目標</div>
+          <div class="goal-value">算数を10分</div>
+        </div>
+        <span class="badge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          達成
+        </span>
+      </div>
+    </section>
+
+    <!-- 今週のようす -->
+    <section>
+      <div class="chart-top-row">
+        <h2 class="section-title">今週のようす</h2>
+        <span class="chart-total">合計 <span id="weekTotal"></span></span>
+      </div>
+      <div class="card" style="margin-top:10px;">
+        <div class="bars" id="bars"></div>
+        <div class="bar-labels" id="barLabels"></div>
+        <div class="legend" id="legend"></div>
+        <div class="detail-box">
+          <div class="detail-top">
+            <span class="detail-date" id="detailDate"></span>
+            <span class="detail-total" id="detailTotal"></span>
+          </div>
+          <div id="detailRows"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 質問・振り返り -->
+    <section>
+      <h2 class="section-title">質問・振り返り</h2>
+      <div id="questionList" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;"></div>
+    </section>
+
+    <!-- 保護者設定 -->
+    <section>
+      <h2 class="section-title">保護者設定</h2>
+      <div class="card" style="margin-top:10px;">
+        <div class="setting-row">
+          <label class="setting-label" for="sleep">
+            <span class="setting-label-top">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+              おやすみモード
+            </span>
+            <span class="setting-note">21:00〜7:00は声かけを控える</span>
+          </label>
+          <span class="switch">
+            <input id="sleep" type="checkbox" checked>
+            <span class="track"></span><span class="knob"></span>
+          </span>
+        </div>
+        <div class="setting-row">
+          <label class="setting-label" for="notif">
+            <span class="setting-label-top">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+              学習の通知
+            </span>
+          </label>
+          <span class="switch">
+            <input id="notif" type="checkbox" checked>
+            <span class="track"></span><span class="knob"></span>
+          </span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabbar">
+    <a class="tab active" href="parent.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/></svg>
+      ホーム
+    </a>
+    <a class="tab" href="study-log.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="6" y1="20" x2="6" y2="12"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="14"/></svg>
+      学習記録
+    </a>
+  </nav>
+</div>
+
+<script>
+const totals = WEEK_DETAIL.map((d) => dayTotalMinutes(d));
+let selected = 5; // 土曜日をデフォルト表示
+
+const barsEl = document.getElementById("bars");
+const labelsEl = document.getElementById("barLabels");
+const legendEl = document.getElementById("legend");
+const detailDateEl = document.getElementById("detailDate");
+const detailTotalEl = document.getElementById("detailTotal");
+const detailRowsEl = document.getElementById("detailRows");
+
+document.getElementById("weekTotal").textContent = minLabel(totals.reduce((a, b) => a + b, 0));
+
+Object.entries(SUBJECT_COLORS).forEach(([name, color]) => {
+  const item = document.createElement("span");
+  item.className = "legend-item";
+  item.innerHTML = `<span class="dot" style="background:${color}"></span>${name}`;
+  legendEl.appendChild(item);
+});
+
+function render() {
+  barsEl.innerHTML = "";
+  labelsEl.innerHTML = "";
+  WEEK_DETAIL.forEach((d, i) => {
+    const total = totals[i];
+    const subjectTotals = daySubjectTotals(d);
+    const btn = document.createElement("button");
+    btn.className = "bar-btn";
+    btn.setAttribute("aria-label", `${d.date} ${minLabel(total)}`);
+    btn.setAttribute("aria-pressed", i === selected ? "true" : "false");
+    btn.style.opacity = i === selected ? "1" : "0.55";
+    const stack = document.createElement("div");
+    stack.className = "bar-stack";
+    Object.entries(subjectTotals).filter(([, m]) => m > 0).forEach(([name, m]) => {
+      const seg = document.createElement("div");
+      seg.style.width = "100%";
+      seg.style.height = (total ? (m / total) * 100 : 0) + "%";
+      seg.style.background = SUBJECT_COLORS[name];
+      stack.appendChild(seg);
+    });
+    if (total === 0) {
+      stack.style.background = "#ECE7E9";
+    }
+    btn.appendChild(stack);
+    btn.addEventListener("click", () => { selected = i; render(); });
+    barsEl.appendChild(btn);
+
+    const lab = document.createElement("span");
+    lab.textContent = d.label;
+    if (i === selected) lab.classList.add("selected");
+    labelsEl.appendChild(lab);
+  });
+
+  const d = WEEK_DETAIL[selected];
+  const total = totals[selected];
+  const subjectTotals = daySubjectTotals(d);
+  detailDateEl.textContent = `${d.date.slice(5).replace("-", "/")}(${d.weekday.replace("曜日", "")})`;
+  detailTotalEl.textContent = minLabel(total);
+  detailRowsEl.innerHTML = "";
+  Object.entries(subjectTotals).filter(([, m]) => m > 0).forEach(([name, m]) => {
+    const row = document.createElement("div");
+    row.className = "detail-row";
+    row.innerHTML = `<span class="dot" style="background:${SUBJECT_COLORS[name]}"></span><span class="detail-name">${name}</span><span class="detail-min">${minLabel(m)}</span>`;
+    detailRowsEl.appendChild(row);
+  });
+  if (d.breaks.length) {
+    const breakMin = dayBreakMinutes(d);
+    const row = document.createElement("div");
+    row.className = "detail-row";
+    row.innerHTML = `<span class="dot" style="background:#ECE7E9"></span><span class="detail-name">休憩</span><span class="detail-min">${minLabel(breakMin)}(${d.breaks.length}回)</span>`;
+    detailRowsEl.appendChild(row);
+  }
+  const more = document.createElement("a");
+  more.href = `study-log.html#${d.date}`;
+  more.style.cssText = "display:flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:#C9435A;margin-top:6px;";
+  more.innerHTML = `この日の詳細を見る <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>`;
+  detailRowsEl.appendChild(more);
+}
+render();
+
+// ---- 質問・振り返り(アコーディオン) ----
+const questionListEl = document.getElementById("questionList");
+QUESTIONS.forEach((q) => {
+  const wrap = document.createElement("div");
+  wrap.className = "card";
+  wrap.style.padding = "0";
+  wrap.style.overflow = "hidden";
+
+  const btn = document.createElement("button");
+  btn.className = "list-item";
+  btn.style.boxShadow = "none";
+  btn.style.borderRadius = "0";
+  btn.innerHTML = `
+    <span class="list-icon" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+    </span>
+    <span class="list-text">
+      <span class="list-title">${q.unit}(${q.subject})</span>
+      <span class="list-sub">${q.reviewed ? "見返し済み" : "未確認"}・${q.date.slice(5).replace("-", "/")}</span>
+    </span>
+    <svg class="chevron chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
+  `;
+
+  const panel = document.createElement("div");
+  panel.style.cssText = "max-height:0; overflow:hidden; transition:max-height .2s ease;";
+  panel.innerHTML = `
+    <div style="padding:0 16px 16px 16px; display:flex; flex-direction:column; gap:8px;">
+      <div style="font-size:12.5px; color:#767179;">質問:${q.question}</div>
+      <div style="font-size:13px; color:#1C1A1E; background:#FFF7F3; border-radius:10px; padding:10px 12px; line-height:1.6;">${q.answer}</div>
+    </div>
+  `;
+
+  let open = false;
+  btn.addEventListener("click", () => {
+    open = !open;
+    panel.style.maxHeight = open ? panel.scrollHeight + "px" : "0";
+    btn.querySelector(".chevron-icon").style.transform = open ? "rotate(90deg)" : "rotate(0deg)";
+    btn.querySelector(".chevron-icon").style.transition = "transform .15s ease";
+  });
+
+  wrap.appendChild(btn);
+  wrap.appendChild(panel);
+  questionListEl.appendChild(wrap);
+});
+</script>
+</body>
+</html>
