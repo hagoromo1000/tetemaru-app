@@ -42,16 +42,16 @@
     <div class="affinity-wrap" aria-label="ててまるとのなかよし度">
       <svg class="affinity-heart" viewBox="0 0 24 24" width="76" height="76" aria-hidden="true">
         <defs>
-          <clipPath id="heartClip"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.1 2.3 4 6.1 4c2 0 3.4 1 4.9 2.8C12.5 5 13.9 4 15.9 4c3.8 0 5.7 4.1 4.1 7.7C17.5 16.4 12 21 12 21z"/></clipPath>
+          <clipPath id="heartClip"><path d="M12 20C12 20 3 14 3 8.5 3 5 5.5 3 8.5 3 10.5 3 12 4.5 12 6 12 4.5 13.5 3 15.5 3 18.5 3 21 5 21 8.5 21 14 12 20 12 20Z"/></clipPath>
         </defs>
-        <path class="affinity-heart-bg" d="M12 21s-7.5-4.6-10-9.3C.4 8.1 2.3 4 6.1 4c2 0 3.4 1 4.9 2.8C12.5 5 13.9 4 15.9 4c3.8 0 5.7 4.1 4.1 7.7C17.5 16.4 12 21 12 21z" fill="#FFE8E1"/>
+        <path class="affinity-heart-bg" d="M12 20C12 20 3 14 3 8.5 3 5 5.5 3 8.5 3 10.5 3 12 4.5 12 6 12 4.5 13.5 3 15.5 3 18.5 3 21 5 21 8.5 21 14 12 20 12 20Z" fill="#FFE8E1"/>
         <g clip-path="url(#heartClip)">
           <g id="affinityWaveGroup" class="affinity-wave-group">
             <path id="affinityWaveBack" class="affinity-wave affinity-wave-back" d=""></path>
             <path id="affinityWaveFront" class="affinity-wave affinity-wave-front" d=""></path>
           </g>
         </g>
-        <path d="M12 21s-7.5-4.6-10-9.3C.4 8.1 2.3 4 6.1 4c2 0 3.4 1 4.9 2.8C12.5 5 13.9 4 15.9 4c3.8 0 5.7 4.1 4.1 7.7C17.5 16.4 12 21 12 21z" fill="none" stroke="#C9435A" stroke-width="1"/>
+        <path d="M12 20C12 20 3 14 3 8.5 3 5 5.5 3 8.5 3 10.5 3 12 4.5 12 6 12 4.5 13.5 3 15.5 3 18.5 3 21 5 21 8.5 21 14 12 20 12 20Z" fill="none" stroke="#C9435A" stroke-width="1"/>
       </svg>
       <div class="affinity-text">
         <span class="affinity-level" id="affinityLevel">なかよし</span>
@@ -98,7 +98,7 @@
 
     <!-- ぎゅっとして -->
     <button class="hug-btn" id="hugBtn">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.1 2.3 4 6.1 4c2 0 3.4 1 4.9 2.8C12.5 5 13.9 4 15.9 4c3.8 0 5.7 4.1 4.1 7.7C17.5 16.4 12 21 12 21z"/></svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 20C12 20 3 14 3 8.5 3 5 5.5 3 8.5 3 10.5 3 12 4.5 12 6 12 4.5 13.5 3 15.5 3 18.5 3 21 5 21 8.5 21 14 12 20 12 20Z"/></svg>
       <span id="hugLabel">ててまるを ぎゅっと する</span>
     </button>
   </main>
@@ -260,26 +260,62 @@ function sayIfOn(text) {
 }
 
 // ---- なかよし度:ハートの水ゆらゆらゲージ ----
-function buildWavePath(phaseDeg) {
-  const amp = 1.1, wavelength = 24, baseline = 4, step = 3;
+// ハートの輪郭は y=3(てっぺん)〜y=20(下のとがり)。水位(baselineY)を直接パスに焼き込むことで、
+// SVGのtransform単位のあいまいさに左右されず、%とハートの水位を正確に一致させる。
+const AFFINITY_TOP_Y = 3;   // 100%のときの水面
+const AFFINITY_BOTTOM_Y = 21.5; // 0%のときの水面(ハートの下端より少し下=完全に空)
+
+function buildWavePath(baselineY, phaseDeg) {
+  const amp = 0.7, wavelength = 24, step = 3;
   const pts = [];
   for (let x = -24; x <= 48; x += step) {
-    const y = baseline + amp * Math.sin((2 * Math.PI * x) / wavelength + (phaseDeg * Math.PI) / 180);
+    const y = baselineY + amp * Math.sin((2 * Math.PI * x) / wavelength + (phaseDeg * Math.PI) / 180);
     pts.push(`${x},${y.toFixed(2)}`);
   }
   return `M ${pts[0]} L ${pts.slice(1).join(" L ")} L 48,30 L -24,30 Z`;
 }
-document.getElementById("affinityWaveBack").setAttribute("d", buildWavePath(0));
-document.getElementById("affinityWaveFront").setAttribute("d", buildWavePath(180));
 
-const affinityWaveGroup = document.getElementById("affinityWaveGroup");
+const waveBackEl = document.getElementById("affinityWaveBack");
+const waveFrontEl = document.getElementById("affinityWaveFront");
 const affinityLevelEl = document.getElementById("affinityLevel");
 const affinityPctEl = document.getElementById("affinityPct");
 const affinityToastEl = document.getElementById("affinityToast");
-const AFFINITY_FILL_RANGE = 18; // 0%→translateY(18) 底, 100%→translateY(0) いっぱい
 
-function renderAffinity(pct) {
-  affinityWaveGroup.style.transform = `translateY(${(AFFINITY_FILL_RANGE * (100 - pct)) / 100}px)`;
+function pctToBaselineY(pct) {
+  return AFFINITY_TOP_Y + ((AFFINITY_BOTTOM_Y - AFFINITY_TOP_Y) * (100 - pct)) / 100;
+}
+
+let currentBaselineY = pctToBaselineY(0);
+let waveAnimFrame = null;
+
+function drawWaveAt(baselineY) {
+  waveBackEl.setAttribute("d", buildWavePath(baselineY, 0));
+  waveFrontEl.setAttribute("d", buildWavePath(baselineY, 180));
+}
+
+function animateWaveTo(targetBaselineY) {
+  cancelAnimationFrame(waveAnimFrame);
+  const startY = currentBaselineY;
+  const startTime = performance.now();
+  const duration = 700;
+  function step(now) {
+    const t = Math.min(1, (now - startTime) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    currentBaselineY = startY + (targetBaselineY - startY) * eased;
+    drawWaveAt(currentBaselineY);
+    if (t < 1) waveAnimFrame = requestAnimationFrame(step);
+  }
+  waveAnimFrame = requestAnimationFrame(step);
+}
+
+function renderAffinity(pct, animate = true) {
+  const targetY = pctToBaselineY(pct);
+  if (animate) {
+    animateWaveTo(targetY);
+  } else {
+    currentBaselineY = targetY;
+    drawWaveAt(targetY);
+  }
   affinityLevelEl.textContent = affinityLevelName(pct);
   affinityPctEl.textContent = pct + "%";
 }
@@ -303,7 +339,7 @@ function bumpAffinity(amount) {
   }
 }
 
-renderAffinity(getAffinity());
+renderAffinity(getAffinity(), false);
 
 // 画面を開いたときのあいさつ
 sayIfOn("やあ!いっしょにがんばろう!");
