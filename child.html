@@ -38,6 +38,29 @@
       <span class="mascot-greeting">やあ!いっしょにがんばろう!</span>
     </div>
 
+    <!-- なかよし度(親密度ゲージ) -->
+    <div class="affinity-wrap" aria-label="ててまるとのなかよし度">
+      <svg class="affinity-heart" viewBox="0 0 24 24" width="76" height="76" aria-hidden="true">
+        <defs>
+          <clipPath id="heartClip"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.1 2.3 4 6.1 4c2 0 3.4 1 4.9 2.8C12.5 5 13.9 4 15.9 4c3.8 0 5.7 4.1 4.1 7.7C17.5 16.4 12 21 12 21z"/></clipPath>
+        </defs>
+        <path class="affinity-heart-bg" d="M12 21s-7.5-4.6-10-9.3C.4 8.1 2.3 4 6.1 4c2 0 3.4 1 4.9 2.8C12.5 5 13.9 4 15.9 4c3.8 0 5.7 4.1 4.1 7.7C17.5 16.4 12 21 12 21z" fill="#FFE8E1"/>
+        <g clip-path="url(#heartClip)">
+          <g id="affinityWaveGroup" class="affinity-wave-group">
+            <path id="affinityWaveBack" class="affinity-wave affinity-wave-back" d=""></path>
+            <path id="affinityWaveFront" class="affinity-wave affinity-wave-front" d=""></path>
+          </g>
+        </g>
+        <path d="M12 21s-7.5-4.6-10-9.3C.4 8.1 2.3 4 6.1 4c2 0 3.4 1 4.9 2.8C12.5 5 13.9 4 15.9 4c3.8 0 5.7 4.1 4.1 7.7C17.5 16.4 12 21 12 21z" fill="none" stroke="#C9435A" stroke-width="1"/>
+      </svg>
+      <div class="affinity-text">
+        <span class="affinity-level" id="affinityLevel">なかよし</span>
+        <span class="affinity-pct" id="affinityPct">45%</span>
+      </div>
+    </div>
+
+    <div id="affinityToast" class="affinity-toast">なかよし度アップ!</div>
+
     <!-- 今日の目標 -->
     <div class="child-card">
       <span class="child-goal-label">きょうの　もくひょう</span>
@@ -166,12 +189,14 @@ function startLock() {
     progressFill.style.width = Math.min(100, (elapsed / GOAL_SECONDS) * 100) + "%";
   }, 1000);
   sayIfOn("さんすう、いっしょに がんばろうね!");
+  bumpAffinity(3);
 }
 
 function endLock() {
   clearInterval(tickTimer);
   overlay.classList.add("hidden");
   sayIfOn("よくがんばったね!おつかれさま!");
+  bumpAffinity(8);
 }
 
 startBtn.addEventListener("click", startLock);
@@ -213,6 +238,7 @@ hugBtn.addEventListener("click", () => {
     hugToast.style.transform = "translateX(-50%) translateY(10px)";
   }, 1400);
   sayIfOn("あったかいね、ありがとう!");
+  bumpAffinity(2);
 });
 
 // ---- 声のON/OFF ----
@@ -232,6 +258,52 @@ voiceToggle.addEventListener("click", () => {
 function sayIfOn(text) {
   if (voiceOn) speak(text);
 }
+
+// ---- なかよし度:ハートの水ゆらゆらゲージ ----
+function buildWavePath(phaseDeg) {
+  const amp = 1.1, wavelength = 24, baseline = 4, step = 3;
+  const pts = [];
+  for (let x = -24; x <= 48; x += step) {
+    const y = baseline + amp * Math.sin((2 * Math.PI * x) / wavelength + (phaseDeg * Math.PI) / 180);
+    pts.push(`${x},${y.toFixed(2)}`);
+  }
+  return `M ${pts[0]} L ${pts.slice(1).join(" L ")} L 48,30 L -24,30 Z`;
+}
+document.getElementById("affinityWaveBack").setAttribute("d", buildWavePath(0));
+document.getElementById("affinityWaveFront").setAttribute("d", buildWavePath(180));
+
+const affinityWaveGroup = document.getElementById("affinityWaveGroup");
+const affinityLevelEl = document.getElementById("affinityLevel");
+const affinityPctEl = document.getElementById("affinityPct");
+const affinityToastEl = document.getElementById("affinityToast");
+const AFFINITY_FILL_RANGE = 18; // 0%→translateY(18) 底, 100%→translateY(0) いっぱい
+
+function renderAffinity(pct) {
+  affinityWaveGroup.style.transform = `translateY(${(AFFINITY_FILL_RANGE * (100 - pct)) / 100}px)`;
+  affinityLevelEl.textContent = affinityLevelName(pct);
+  affinityPctEl.textContent = pct + "%";
+}
+
+let affinityToastTimer = null;
+function showAffinityToast(text) {
+  affinityToastEl.textContent = text;
+  affinityToastEl.classList.add("show");
+  clearTimeout(affinityToastTimer);
+  affinityToastTimer = setTimeout(() => affinityToastEl.classList.remove("show"), 1600);
+}
+
+function bumpAffinity(amount) {
+  const { after, levelUp } = addAffinity(amount);
+  renderAffinity(after);
+  if (levelUp) {
+    showAffinityToast(`なかよし度アップ!「${affinityLevelName(after)}」になったよ`);
+    sayIfOn(`なかよし度があがったよ!いまは${affinityLevelName(after)}だね!`);
+  } else {
+    showAffinityToast("なかよし度アップ!");
+  }
+}
+
+renderAffinity(getAffinity());
 
 // 画面を開いたときのあいさつ
 sayIfOn("やあ!いっしょにがんばろう!");

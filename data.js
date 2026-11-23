@@ -206,3 +206,32 @@ function applyKanjiLevel(level) {
     rt.style.display = level < grade ? "" : "none";
   });
 }
+
+// ---- なかよし度(親密度ゲージ) ----
+// 時間経過での減衰はなし(増える一方)。「無理強いしない」というててまるのコンセプトに合わせている。
+const AFFINITY_KEY = "tetemaru_affinity";
+const AFFINITY_DEFAULT = 15;
+const AFFINITY_LEVELS = [
+  { min: 0, name: "はじめまして" },
+  { min: 30, name: "なかよし" },
+  { min: 60, name: "大親友" },
+  { min: 90, name: "ずっといっしょ" },
+];
+
+function getAffinity() {
+  const v = Number(localStorage.getItem(AFFINITY_KEY));
+  return Number.isFinite(v) && v >= 0 ? Math.min(100, v) : AFFINITY_DEFAULT;
+}
+
+function addAffinity(amount) {
+  const before = getAffinity();
+  const after = Math.max(0, Math.min(100, before + amount));
+  localStorage.setItem(AFFINITY_KEY, String(after));
+  return { before, after, levelUp: affinityLevelName(after) !== affinityLevelName(before) };
+}
+
+function affinityLevelName(pct) {
+  let name = AFFINITY_LEVELS[0].name;
+  AFFINITY_LEVELS.forEach((l) => { if (pct >= l.min) name = l.name; });
+  return name;
+}
