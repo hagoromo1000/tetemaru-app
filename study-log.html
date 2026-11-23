@@ -13,7 +13,7 @@
   <header class="header">
     <div class="header-row">
       <div>
-        <h1 class="header-title">学習記録</h1>
+        <h1 class="header-title" id="pageTitle">学習記録</h1>
         <span class="header-sub">直近7日間のくわしい記録</span>
       </div>
       <a class="avatar" href="index.html" aria-label="メニューへ戻る" style="text-decoration:none;">
@@ -21,6 +21,16 @@
       </a>
     </div>
   </header>
+
+  <div class="level-picker-row">
+    <span class="level-picker-label">かんじ レベル</span>
+    <div class="level-picker" id="levelPicker">
+      <button class="level-btn" data-level="1">1年</button>
+      <button class="level-btn" data-level="2">2年</button>
+      <button class="level-btn active" data-level="3">3年</button>
+      <button class="level-btn" data-level="6">ぜんぶ</button>
+    </div>
+  </div>
 
   <main class="content" id="logList" style="gap:12px; padding-bottom: 32px;"></main>
 </div>
@@ -37,6 +47,20 @@ const SUBJECT_ICON_PATHS = {
 function subjectIconSvg(subject) {
   return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${SUBJECT_COLORS[subject]}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${SUBJECT_ICON_PATHS[subject] || ""}</svg>`;
 }
+
+document.getElementById("pageTitle").innerHTML = annotateFurigana("学習記録");
+
+// ---- かんじレベル picker ----
+const levelPickerEl = document.getElementById("levelPicker");
+let currentLevel = getKanjiLevel();
+levelPickerEl.querySelectorAll(".level-btn").forEach((btn) => {
+  btn.classList.toggle("active", Number(btn.dataset.level) === currentLevel);
+  btn.addEventListener("click", () => {
+    currentLevel = Number(btn.dataset.level);
+    setKanjiLevel(currentLevel);
+    levelPickerEl.querySelectorAll(".level-btn").forEach((b) => b.classList.toggle("active", b === btn));
+  });
+});
 
 const logListEl = document.getElementById("logList");
 const openDate = location.hash ? location.hash.slice(1) : null;
@@ -57,7 +81,7 @@ WEEK_DETAIL.slice().reverse().forEach((d) => {
   head.innerHTML = `
     <span style="display:flex; flex-direction:column; gap:2px; text-align:left;">
       <span style="font-size:14px; font-weight:800;">${d.date.slice(5).replace("-", "/")}(${d.weekday.replace("曜日","")})</span>
-      <span style="font-size:11.5px; color:#767179;">教材 ${d.sessions.length}件・休憩 ${d.breaks.length}回</span>
+      <span style="font-size:11.5px; color:#767179;">${annotateFurigana("教材")} ${d.sessions.length}件・${annotateFurigana("休憩")} ${d.breaks.length}回</span>
     </span>
     <span style="display:flex; align-items:center; gap:10px;">
       <span style="font-size:15px; font-weight:800; color:#C9435A;">${minLabel(total)}</span>
@@ -81,7 +105,7 @@ WEEK_DETAIL.slice().reverse().forEach((d) => {
     <div style="display:flex; align-items:flex-start; gap:10px; padding:10px 0; border-top:1px solid #ECE7E9;">
       <span style="width:30px; height:30px; border-radius:9px; background:#FFF7F3; display:flex; align-items:center; justify-content:center; flex-shrink:0;">${subjectIconSvg(s.subject)}</span>
       <span style="flex:1; display:flex; flex-direction:column; gap:2px;">
-        <span style="font-size:13px; font-weight:700;">${s.subject}:${s.material}</span>
+        <span style="font-size:13px; font-weight:700;">${annotateFurigana(s.subject)}:${annotateFurigana(s.material)}</span>
         <span style="font-size:11.5px; color:#767179;">${s.pages}ページ・${s.start}〜${s.end}(${sessionMinutes(s)}分)</span>
       </span>
     </div>
@@ -94,14 +118,14 @@ WEEK_DETAIL.slice().reverse().forEach((d) => {
           <span style="width:30px; height:30px; border-radius:9px; background:#F3F0F1; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#767179" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
           </span>
-          <span style="flex:1; font-size:12.5px; color:#767179;">休憩:${b.reason}</span>
+          <span style="flex:1; font-size:12.5px; color:#767179;">${annotateFurigana("休憩")}:${b.reason}</span>
           <span style="font-size:12.5px; color:#767179; font-weight:600;">${b.start}〜${b.end}(${b.minutes}分)</span>
         </div>
       `).join("")}
     </div>
   ` : "";
 
-  const emptyHtml = d.sessions.length === 0 ? `<div style="padding:12px 0; font-size:12.5px; color:#767179; text-align:center;">この日の学習記録はありません</div>` : "";
+  const emptyHtml = d.sessions.length === 0 ? `<div style="padding:12px 0; font-size:12.5px; color:#767179; text-align:center;">この日の${annotateFurigana("学習記録")}はありません</div>` : "";
 
   panel.innerHTML = `<div style="padding:0 16px 16px;">${sessionsHtml}${emptyHtml}${breaksHtml ? `<div style="margin-top:10px; padding-top:10px; border-top:1px solid #ECE7E9;">${breaksHtml}</div>` : ""}</div>`;
 
@@ -125,6 +149,8 @@ if (openDate) {
   const target = document.getElementById("day-" + openDate);
   if (target) setTimeout(() => target.scrollIntoView({ behavior: "smooth", block: "start" }), 150);
 }
+
+applyKanjiLevel(currentLevel);
 </script>
 </body>
 </html>

@@ -43,29 +43,39 @@
     </div>
   </header>
 
+  <div class="level-picker-row">
+    <span class="level-picker-label">かんじ レベル</span>
+    <div class="level-picker" id="levelPicker">
+      <button class="level-btn" data-level="1">1年</button>
+      <button class="level-btn" data-level="2">2年</button>
+      <button class="level-btn active" data-level="3">3年</button>
+      <button class="level-btn" data-level="6">ぜんぶ</button>
+    </div>
+  </div>
+
   <main class="content">
 
     <!-- 今日の学習 -->
     <section>
-      <h2 class="section-title">今日の学習</h2>
+      <h2 class="section-title kanji-text">今日の学習</h2>
       <div class="stat-row" style="margin-top:10px;">
         <div class="card stat-card">
-          <span class="stat-label">学習時間</span>
+          <span class="stat-label kanji-text">学習時間</span>
           <span class="stat-value">25分</span>
         </div>
         <div class="card stat-card">
-          <span class="stat-label">取り組んだ問題</span>
+          <span class="stat-label kanji-text">取り組んだ問題</span>
           <span class="stat-value">8問</span>
         </div>
       </div>
       <div class="card goal-row" style="margin-top:10px;">
         <div>
-          <div class="goal-label">今日の目標</div>
-          <div class="goal-value">算数を10分</div>
+          <div class="goal-label kanji-text">今日の目標</div>
+          <div class="goal-value kanji-text">算数を10分</div>
         </div>
         <span class="badge">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-          達成
+          <span class="kanji-text">達成</span>
         </span>
       </div>
     </section>
@@ -73,8 +83,8 @@
     <!-- 今週のようす -->
     <section>
       <div class="chart-top-row">
-        <h2 class="section-title">今週のようす</h2>
-        <span class="chart-total">合計 <span id="weekTotal"></span></span>
+        <h2 class="section-title kanji-text">今週のようす</h2>
+        <span class="chart-total"><span class="kanji-text">合計</span> <span id="weekTotal"></span></span>
       </div>
       <div class="card" style="margin-top:10px;">
         <div class="bars" id="bars"></div>
@@ -92,13 +102,13 @@
 
     <!-- 質問・振り返り -->
     <section>
-      <h2 class="section-title">質問・振り返り</h2>
+      <h2 class="section-title kanji-text">質問・振り返り</h2>
       <div id="questionList" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;"></div>
     </section>
 
     <!-- 保護者設定 -->
     <section>
-      <h2 class="section-title">保護者設定</h2>
+      <h2 class="section-title kanji-text">保護者設定</h2>
       <div class="card" style="margin-top:10px;">
         <div class="setting-row">
           <label class="setting-label" for="sleep">
@@ -117,7 +127,7 @@
           <label class="setting-label" for="notif">
             <span class="setting-label-top">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
-              学習の通知
+              <span class="kanji-text">学習の通知</span>
             </span>
           </label>
           <span class="switch">
@@ -238,7 +248,7 @@ QUESTIONS.forEach((q) => {
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
     </span>
     <span class="list-text">
-      <span class="list-title">${q.unit}(${q.subject})</span>
+      <span class="list-title">${annotateFurigana(q.unit)}(${annotateFurigana(q.subject)})</span>
       <span class="list-sub">${q.reviewed ? "見返し済み" : "未確認"}・${q.date.slice(5).replace("-", "/")}</span>
     </span>
     <svg class="chevron chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
@@ -248,8 +258,8 @@ QUESTIONS.forEach((q) => {
   panel.style.cssText = "max-height:0; overflow:hidden; transition:max-height .2s ease;";
   panel.innerHTML = `
     <div style="padding:0 16px 16px 16px; display:flex; flex-direction:column; gap:8px;">
-      <div style="font-size:12.5px; color:#767179;">質問:${q.question}</div>
-      <div style="font-size:13px; color:#1C1A1E; background:#FFF7F3; border-radius:10px; padding:10px 12px; line-height:1.6;">${q.answer}</div>
+      <div style="font-size:12.5px; color:#767179;">${annotateFurigana("質問")}:${annotateFurigana(q.question)}</div>
+      <div style="font-size:13px; color:#1C1A1E; background:#FFF7F3; border-radius:10px; padding:10px 12px; line-height:1.6;">${annotateFurigana(q.answer)}</div>
     </div>
   `;
 
@@ -265,6 +275,23 @@ QUESTIONS.forEach((q) => {
   wrap.appendChild(panel);
   questionListEl.appendChild(wrap);
 });
+
+// ---- かんじレベル picker ----
+document.querySelectorAll(".kanji-text").forEach((el) => {
+  el.innerHTML = annotateFurigana(el.textContent);
+});
+
+const levelPickerEl = document.getElementById("levelPicker");
+let currentLevel = getKanjiLevel();
+levelPickerEl.querySelectorAll(".level-btn").forEach((btn) => {
+  btn.classList.toggle("active", Number(btn.dataset.level) === currentLevel);
+  btn.addEventListener("click", () => {
+    currentLevel = Number(btn.dataset.level);
+    setKanjiLevel(currentLevel);
+    levelPickerEl.querySelectorAll(".level-btn").forEach((b) => b.classList.toggle("active", b === btn));
+  });
+});
+applyKanjiLevel(currentLevel);
 </script>
 </body>
 </html>
